@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% set current_page = 'downloads' %}
+
+{% block content %}
+
+<div class="container pl-10 pr-10 mt-5">
+
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Files select:
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          {% for list_files_i in files %}
+          <a class="dropdown-item" href="/files/{{list_files_i}}">{{list_files_i}}</a>
+          {% endfor %}
+        </div>
+      </div>
+        <form action="{{ url_for("convert.files")}}" method="post">
+            <input type="hidden" name="action" value="delete_files">
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary mb-3">Delete Files</button>
+            </div>
+        </form>
+
+</div>
+{% endblock %}

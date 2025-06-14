@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% set current_page = 'convert' %}
+
+{% block content %}
+
+    {% if mode == "download" %}
+    <div class="container mt-5">
+            <div class="card p-4 shadow-sm">
+                <h4>Progress Output</h4>
+                <pre id="output" class="bg-dark text-white p-3 rounded" style="height: 400px; overflow-y: auto;"></pre>
+            </div>
+      <script>
+      var eventSource = null;
+      function startStream() {
+          if (eventSource) {
+              eventSource.close();
+          }
+          eventSource = new EventSource("/stream");
+          eventSource.onmessage = function(e) {
+              var output = document.getElementById("output");
+
+              if (e.data === "__DONE__") {
+                  console.log("Download complete!");
+                  eventSource.close();
+                  output.textContent += "\nDownload complete!\n";
+              } else {
+                  output.textContent += e.data + "\n";
+                  output.scrollTop = output.scrollHeight;
+              }
+          };
+          eventSource.onerror = function(e) {
+              console.error("EventSource failed:", e);
+              eventSource.close(); // Optional: stop on error
+          };
+      }
+          startStream();
+      </script>
+    </div>
+    {% elif mode == "get_link" %}
+
+
+      <div class="container pl-10 pr-10 mt-5">
+              <form action="{{ url_for("convert.start")}}" method="post">
+                  <input type="hidden" name="action" value="set_link">
+                  <div class="mb-3 row">
+                      <label for="yt-url" class="col-sm-2 col-form-label">Input Link:</label>
+                      <div class="col-sm-10">
+                      <input type="text" id="yt-url" name="yt-url" placeholder="Youtube URL" class="form-control">
+                      </div>
+                  </div>
+                  <div class="col-auto">
+                      <button type="submit" class="btn btn-primary mb-3">Submit</button>
+                  </div>
+              </form>
+      </div>
+    {% elif mode == "too_many_files" %}
+
+      <div class="container pl-10 pr-10 mt-5">
+              <h3> Too many files downloaded! remove all and try again. </h3>
+      </div>
+
+    {% endif %}
+{% endblock %}
